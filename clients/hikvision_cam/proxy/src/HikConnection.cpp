@@ -15,12 +15,12 @@ HikConnection::HikConnection(boost::asio::io_context& io_context)
       m_alarm_con(false),
       m_ioContext(io_context) {
     ActivityWatcher::get()->add(this);
-    std::cout << "HikConnection::HikConnection "<< this << std::endl;
+    //std::cout << "HikConnection::HikConnection "<< this << std::endl;
 }
 
 HikConnection::~HikConnection() {
     ActivityWatcher::get()->remove(this);
-    std::cout << "~HikConnection "<< this << std::endl;
+    //std::cout << "~HikConnection "<< this << std::endl;
 }
 
 void HikConnection::close() {

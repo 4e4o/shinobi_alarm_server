@@ -1,0 +1,13 @@
+[Unit]
+Description=notSofia motion detection client
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/bin/bash -c '/home/computer/workspace/shinobi_alarm_install/notSofiaAlarmClient 10.10.10.11 555'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

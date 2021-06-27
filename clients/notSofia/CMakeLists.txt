@@ -21,3 +21,5 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} Boost::system Boost::thread rt)
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
     ${Boost_INCLUDE_DIRS}
     )
+
+install (TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

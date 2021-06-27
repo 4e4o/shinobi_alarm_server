@@ -23,7 +23,7 @@ StolenConnection::StolenConnection(boost::asio::io_context& io_context, int sock
 
 StolenConnection::~StolenConnection() {
     ActivityWatcher::get()->remove(this);
-    std::cout << "~StolenConnection "<< this << std::endl;
+    //std::cout << "~StolenConnection "<< this << std::endl;
 }
 
 void StolenConnection::receive() {

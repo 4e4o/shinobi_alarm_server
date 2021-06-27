@@ -1,11 +1,16 @@
 #include "MotionState.h"
 
-#include <boost/bind.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/bind/bind.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 #include <fstream>
 #include <iostream>
 
-#define FILE_PREFIX     "md_XXXXXX"
+#define FILE_PREFIX     "md_"
 #define PATH_PREFIX     "/dev/shm/streams/dropInEvents"
 
 #define MOTION_INTERVAL_NO_EVENT_MAX_SEC    30
@@ -65,13 +70,26 @@ void MotionState::triggerImpl() {
     m_eventsGoing = true;
 }
 
+
+static std::string make_uuid() {
+    return boost::lexical_cast<std::string>((boost::uuids::random_generator())());
+}
+
+std::string MotionState::makeUniqueFilename() {
+    while (1) {
+        std::string path = PATH_PREFIX + std::string("/") +
+                m_dir + std::string("/") +
+                m_id + std::string("/") + std::string(FILE_PREFIX) + make_uuid();
+
+        if (!boost::filesystem::exists(path))
+            return path;
+
+        usleep(100000);
+    }
+}
+
 void MotionState::sendEvent() {
-    std::string path0 = PATH_PREFIX + std::string("/") +
-            m_dir + std::string("/") +
-            m_id + std::string("/") + std::string(FILE_PREFIX);
-    std::vector<char> dst_path(path0.begin(), path0.end());
-    mkstemp(&dst_path[0]);
-    std::string path(dst_path.begin(), dst_path.end());
+    const std::string path = makeUniqueFilename();
     std::ofstream fout;
     fout.open(path, std::ios::binary | std::ios::out);
 

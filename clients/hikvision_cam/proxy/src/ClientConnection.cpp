@@ -17,7 +17,7 @@ ClientConnection::pointer ClientConnection::create(boost::asio::io_context& io_c
 ClientConnection::ClientConnection(boost::asio::io_context& io_context)
     : m_socket(io_context), m_ioContext(io_context), m_recvBuffer(4096) {
     ActivityWatcher::get()->add(this);
-    std::cout << "ClientConnection::ClientConnection "<< this << std::endl;
+    //std::cout << "ClientConnection::ClientConnection "<< this << std::endl;
 }
 
 tcp::socket& ClientConnection::socket() {
@@ -32,8 +32,7 @@ void ClientConnection::start() {
 
     m_hikCon->connect([this, pthis](boost::system::error_code ec) {
         if (ec) {
-            std::cout << ec.message()  << std::endl;
-
+//            std::cout << ec.message()  << std::endl;
             return;
         }
 
@@ -44,7 +43,7 @@ void ClientConnection::start() {
 
 ClientConnection::~ClientConnection() {
     ActivityWatcher::get()->remove(this);
-    std::cout << "~ClientConnection "<< this << std::endl;
+//    std::cout << "~ClientConnection "<< this << std::endl;
 }
 
 void ClientConnection::receiveFromHik() {

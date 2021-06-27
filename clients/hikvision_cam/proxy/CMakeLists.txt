@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 SET(Boost_USE_STATIC_LIBS OFF)
 SET(Boost_USE_MULTITHREAD ON)
-FIND_PACKAGE(Boost REQUIRED COMPONENTS system thread)
+FIND_PACKAGE(Boost REQUIRED COMPONENTS system thread filesystem)
 
 add_executable(${PROJECT_NAME})
 
@@ -16,8 +16,10 @@ list(APPEND PRJ_SRCS "../../../src/MessageQueue.cpp")
 
 target_sources(${PROJECT_NAME} PRIVATE ${PRJ_SRCS})
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} Boost::system Boost::thread rt)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} Boost::system Boost::thread Boost::filesystem rt)
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
     ${Boost_INCLUDE_DIRS}
     )
+
+install (TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

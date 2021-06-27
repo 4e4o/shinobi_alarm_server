@@ -8,6 +8,7 @@ struct Args {
 
     static Args* args();
 
+    std::string prog_path;
     std::string ip;
     int port;
     std::string login;

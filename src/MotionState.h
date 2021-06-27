@@ -17,6 +17,7 @@ private:
     void triggerImpl();
     void onEventsEndTick(const boost::system::error_code& e);
     void restartEventsEndTimer();
+    std::string makeUniqueFilename();
 
     boost::asio::io_context& m_context;
     std::string m_dir;

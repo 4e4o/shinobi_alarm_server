@@ -37,7 +37,7 @@ TCPServer::~TCPServer() {
 void TCPServer::startHikClient() {
     m_clientThread = new std::thread([this]() {
         Args *args = Args::args();
-        const std::string cmd = "hikvision_client 127.0.0.1 " +
+        const std::string cmd = args->prog_path + "/hikvision_client 127.0.0.1 " +
                 std::to_string(m_port) + " " + args->login + " " +
                 args->pass;
         std::system(cmd.c_str());

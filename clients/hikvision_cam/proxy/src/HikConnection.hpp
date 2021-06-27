@@ -28,7 +28,7 @@ public:
     template<class Completion>
     void sendToHik(Completion&& c, std::vector<boost::uint8_t>& buffer, size_t bytes_transferred) {
         if (m_firstSend) {
-            std::cout <<"m_firstSend " << m_firstSend << " " << bytes_transferred << " " << this << std::endl;
+            //std::cout <<"m_firstSend " << m_firstSend << " " << bytes_transferred << " " << this << std::endl;
 
             if (bytes_transferred == 32)
                 m_alarm_con = true;

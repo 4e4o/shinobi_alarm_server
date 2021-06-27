@@ -25,11 +25,11 @@ ClientConnection::ClientConnection(boost::asio::io_context& io_context)
       m_socket(io_context), m_ioContext(io_context), m_recvBuffer(BUFFER_SIZE),
       m_recvCount(0),
       m_queue(new MessageQueue()) {
-    std::cout << "ClientConnection::ClientConnection "<< this << std::endl;
+    //std::cout << "ClientConnection::ClientConnection "<< this << std::endl;
 }
 
 ClientConnection::~ClientConnection() {
-    std::cout << "~ClientConnection "<< this << std::endl;
+    //std::cout << "~ClientConnection "<< this << std::endl;
 }
 
 tcp::socket& ClientConnection::socket() {
@@ -117,7 +117,7 @@ void ClientConnection::handleRead(const boost::system::error_code& error,
 
     while ((index = m_strRecv.find(CMD_SEPARATOR)) != std::string::npos) {
         line = m_strRecv.substr(0, index);
-        m_strRecv.erase(0, index + 2);
+        m_strRecv.erase(0, index + strlen(CMD_SEPARATOR));
         if (!onCommandLine(line)) {
             close();
             return;
@@ -143,10 +143,10 @@ bool ClientConnection::onCommandLine(const std::string& cmd) {
     if (cmd.starts_with("MD ")) {
         int chId = std::stoi(cmd.substr(3));
         m_queue->send(chId);
-        std::cout << "ClientConnection::onCommandLine: md " << chId << std::endl;
+//        std::cout << "ClientConnection::onCommandLine: md " << chId << std::endl;
     }
 
-    std::cout << "ClientConnection::onCommandLine: " << cmd << std::endl;
+//    std::cout << "ClientConnection::onCommandLine: " << cmd << std::endl;
     return true;
 }
 
