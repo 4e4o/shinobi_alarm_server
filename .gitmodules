@@ -1,0 +1,3 @@
+[submodule "clients/hikvision_cam/hikvision_alarm/HikProtocolLib"]
+	path = clients/hikvision_cam/hikvision_alarm/HikProtocolLib
+	url = git@github.com:4e4o/HikProtocolLib.git
