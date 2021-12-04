@@ -16,7 +16,7 @@ public:
 };
 
 int main(int argc, char **argv) {
-    std::unique_ptr<MessageQueue> queue;
+    std::unique_ptr<MessageQueue> queue(new MessageQueue());
     std::unique_ptr<AlarmManager> am(new AlarmManager(argc, argv));
     am->registerType<ChannelConfig, ChannelConfigEx, const boost::json::object&>();
     using TMD = AlarmManager::TMotion;
