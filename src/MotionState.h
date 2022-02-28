@@ -1,9 +1,14 @@
 #ifndef MOTION_STATE_H
 #define MOTION_STATE_H
 
-#include <boost/asio.hpp>
+#include <Misc/StrandHolder.hpp>
 
-class MotionState {
+#include <boost/enable_shared_from_this.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+
+class Timer;
+
+class MotionState : public std::enable_shared_from_this<MotionState>, public StrandHolder {
 public:
     MotionState(boost::asio::io_context&,
                 const std::string& dir,
@@ -15,16 +20,16 @@ public:
 private:
     void sendEvent();
     void triggerImpl();
-    void onEventsEndTick(const boost::system::error_code& e);
-    void restartEventsEndTimer();
+    void onEventsEndTick();
     std::string makeUniqueFilename();
+    std::string make_uuid();
 
-    boost::asio::io_context& m_context;
     std::string m_dir;
     std::string m_id;
     boost::posix_time::ptime m_lastEventTime;
-    boost::asio::steady_timer m_evensEndTimer;
+    std::unique_ptr<Timer> m_evensEndTimer;
     bool m_eventsGoing;
+    boost::uuids::random_generator m_generator;
 };
 
 

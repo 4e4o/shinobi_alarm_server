@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=root
 Group=root
-ExecStart=/usr/bin/bash -c '/home/computer/workspace/shinobi_alarm_install/shinobi_alarm_server --s_ac_id 5Y9bj3R7C5 --s_id kpqprFHKKP Fci8iiyetp --c_id 66 1'
+ExecStart=/usr/bin/bash -c '/usr/local/bin/shinobi_alarm_server --s_ac_id 5Y9bj3R7C5 --s_id kpqprFHKKP Fci8iiyetp --c_id 66 1'
 Restart=always
 
 [Install]

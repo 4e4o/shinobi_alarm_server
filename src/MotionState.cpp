@@ -1,11 +1,12 @@
 #include "MotionState.h"
 
 #include <boost/filesystem.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+#include <Misc/Timer.hpp>
+#include <Misc/Debug.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -18,38 +19,37 @@
 
 namespace bpt = boost::posix_time;
 
-MotionState::MotionState(boost::asio::io_context &c,
+MotionState::MotionState(boost::asio::io_context &io,
                          const std::string& dir,
                          const std::string& id)
-    : m_context(c),
+    : StrandHolder(io),
       m_dir(dir),
       m_id(id),
-      m_evensEndTimer(c),
+      m_evensEndTimer(new Timer(io, MOTION_FINAL_EVENT_SEC)),
       m_eventsGoing(false) {
+    m_evensEndTimer->setStrand(this, false);
+    m_evensEndTimer->onTimeout.connect([this] (Timer*) {
+        onEventsEndTick();
+    });
+
+    debug_print(boost::format("MotionState::MotionState %1%") % this);
 }
 
 MotionState::~MotionState() {
+    debug_print(boost::format("MotionState::~MotionState %1%") % this);
 }
 
 void MotionState::trigger() {
-    boost::asio::post(m_context.get_executor(), [this]() {
-        triggerImpl();
+    auto self = shared_from_this();
+    post([self]() {
+        self->triggerImpl();
     });
 }
 
-void MotionState::onEventsEndTick(const boost::system::error_code& e) {
-    if (e)
-        return;
-
+void MotionState::onEventsEndTick() {
+    //debug_print(boost::format("MotionState::onEventsEndTick %1%") % this);
     sendEvent();
     m_eventsGoing = false;
-}
-
-void MotionState::restartEventsEndTimer() {
-    m_evensEndTimer.expires_from_now(boost::asio::chrono::seconds(MOTION_FINAL_EVENT_SEC));
-    m_evensEndTimer.async_wait(boost::bind(&MotionState::onEventsEndTick,
-                                           this,
-                                           boost::asio::placeholders::error));
 }
 
 void MotionState::triggerImpl() {
@@ -60,19 +60,18 @@ void MotionState::triggerImpl() {
         // если будут часто лететь motion эвенты,
         // то мы их будем разрежать до 1 эвента в 30 секунд
         if (duration.total_seconds() < MOTION_INTERVAL_NO_EVENT_MAX_SEC) {
-            restartEventsEndTimer();
+            m_evensEndTimer->startTimer();
             return;
         }
     }
 
     sendEvent();
-    restartEventsEndTimer();
+    m_evensEndTimer->startTimer();
     m_eventsGoing = true;
 }
 
-
-static std::string make_uuid() {
-    return boost::lexical_cast<std::string>((boost::uuids::random_generator())());
+std::string MotionState::make_uuid() {
+    return boost::lexical_cast<std::string>(m_generator());
 }
 
 std::string MotionState::makeUniqueFilename() {
@@ -84,7 +83,7 @@ std::string MotionState::makeUniqueFilename() {
         if (!boost::filesystem::exists(path))
             return path;
 
-        usleep(100000);
+        usleep(50000);
     }
 }
 
@@ -93,10 +92,12 @@ void MotionState::sendEvent() {
     std::ofstream fout;
     fout.open(path, std::ios::binary | std::ios::out);
 
+//    debug_print(boost::format("MotionState::sendEvent %1% %2%") % this % path);
+
     if (fout.is_open()) {
         char byte = 1;
         fout.write((char*) &byte, sizeof(byte));
-//        std::cout << "MotionState file event created " << this << " , " << path << std::endl;
+//        debug_print(boost::format("MotionState file event created %1% %2%") % this % path);
         fout.close();
     }
 

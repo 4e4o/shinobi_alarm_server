@@ -1,50 +1,81 @@
 #include "MotionReceiver.h"
-#include "MessageQueue.h"
 #include "MotionState.h"
+#include "Config/ShinobiConfig.hpp"
+#include "Config/CameraConfig.hpp"
+
+#include <IPC/IntQueue.h>
+#include <Misc/ScopeGuard.hpp>
+#include <Misc/Debug.hpp>
 
 #include <iostream>
 
 using namespace boost::interprocess;
 
-MotionReceiver::MotionReceiver(boost::asio::io_context &c,
-                               const std::string& acId,
-                               const TCamMap &id)
-    : m_context(c),
-      m_acId(acId),
-      m_id(id) {
+#define IPC_QUEUE_NAME  "shinobi_alarm_queue"
+
+MotionReceiver::MotionReceiver(boost::asio::io_context &io,
+                               const ShinobiConfig* config)
+    : StrandHolder(io),
+      m_config(config),
+      m_queue(new IPCIntQueue(IPC_QUEUE_NAME, false)) {
+    for (const auto& cam : config->getCameras()) {
+        m_id[cam->mappedId()] = cam->camId();
+    }
+
+    debug_print(boost::format("MotionReceiver::MotionReceiver %1%") % this);
+}
+
+MotionReceiver::~MotionReceiver() {
+    debug_print(boost::format("MotionReceiver::~MotionReceiver %1%") % this);
 }
 
 void MotionReceiver::start() {
-    m_thread.reset(new std::thread([this] () {
-        try {
-            MessageQueue mq(false);
+    postReceive();
+}
 
-            while(1) {
-                const int chId = mq.receive();
+void MotionReceiver::stop() {
+    if (m_stopped.test_and_set())
+        return;
 
-                if (chId < 0) {
-                    std::cout << "received -1 chId" << std::endl;
-                    return;
-                }
+    auto self = shared_from_this();
+    boost::asio::post([self] {
+        self->m_queue->send(-1);
+    });
+}
 
-                if (!m_id.contains(chId))
-                    continue;
+void MotionReceiver::postReceive() {
+    auto self = shared_from_this();
+    post([self] {
+        self->receive();
+    });
+}
 
-                MotionState *state = nullptr;
+void MotionReceiver::receive() {
+    if (m_stopped.test())
+        return;
 
-                if (m_states.contains(chId))
-                    state = m_states[chId];
+    ScopeGuard s([this]() {
+        postReceive();
+    });
 
-                if (state == nullptr) {
-                    state = new MotionState(m_context, m_acId, m_id[chId]);
-                    m_states[chId] = state;
-                }
+    try {
+        const int chId = m_queue->receive();
 
-                state->trigger();
-            }
-        } catch(interprocess_exception &ex) {
-            std::cout << ex.what() << std::endl;
+        if (chId < 0 || !m_id.contains(chId))
             return;
+
+        std::shared_ptr<MotionState> state;
+
+        if (m_states.contains(chId))
+            state = m_states[chId];
+
+        if (state.get() == nullptr) {
+            state.reset(new MotionState(io(), m_config->getId(), m_id[chId]));
+            m_states[chId] = state;
         }
-    }));
+
+        state->trigger();
+    } catch(interprocess_exception &ex) {
+        std::cout << ex.what() << std::endl;
+    }
 }

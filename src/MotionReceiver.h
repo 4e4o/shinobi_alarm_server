@@ -2,26 +2,35 @@
 #define MOTION_RECEIVER_H
 
 #include <boost/asio.hpp>
+#include <boost/enable_shared_from_this.hpp>
+
+#include <Misc/StrandHolder.hpp>
 
 class MotionState;
+class IPCIntQueue;
+class ShinobiConfig;
 
-class MotionReceiver {
+class MotionReceiver : public std::enable_shared_from_this<MotionReceiver>, public StrandHolder {
 public:
-    typedef std::map<int, std::string> TCamMap;
-
     MotionReceiver(boost::asio::io_context&,
-                   const std::string&,
-                   const TCamMap &id);
+                   const ShinobiConfig*);
+    ~MotionReceiver();
 
     void start();
+    void stop();
 
 private:
-    typedef std::map<int, MotionState*> TStateMap;
-    boost::asio::io_context& m_context;
-    std::unique_ptr<std::thread> m_thread;
-    std::string m_acId;
+    void postReceive();
+    void receive();
+
+    typedef std::map<int, std::string> TCamMap;
+    typedef std::map<int, std::shared_ptr<MotionState>> TStateMap;
+
+    const ShinobiConfig* m_config;
+    std::unique_ptr<IPCIntQueue> m_queue;
     TCamMap m_id;
     TStateMap m_states;
+    std::atomic_flag m_stopped = ATOMIC_FLAG_INIT;
 };
 
 #endif /* MOTION_RECEIVER_H */

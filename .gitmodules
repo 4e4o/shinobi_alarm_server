@@ -1,3 +1,6 @@
 [submodule "clients/hikvision_cam/hikvision_alarm/HikProtocolLib"]
 	path = clients/hikvision_cam/hikvision_alarm/HikProtocolLib
 	url = https://github.com/4e4o/HikProtocolLib.git
+[submodule "boost_base"]
+	path = boost_base
+	url = git@github.com:4e4o/boost_base.git
