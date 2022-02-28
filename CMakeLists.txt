@@ -19,3 +19,4 @@ target_link_libraries(${PROJECT_NAME} boost_base Boost::filesystem)
 install (TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 
 install(FILES "scripts/shinobi_alarm_server.service" DESTINATION /etc/systemd/system/)
+install(FILES "scripts/config.txt" DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/shinobi_alarm_server/)

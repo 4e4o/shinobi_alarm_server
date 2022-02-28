@@ -4,12 +4,12 @@
             "shinobi_account_id": "Lbc5iS1cah",
             "cameras":[
                 {
-                    "name": "koridor hikvision",
+                    "name": "korhik",
                     "shinobi_camera_id": "NIurionfqY",
                     "mapped_id": "66",
                 },
                 {
-                    "name": "dver dvr",
+                    "name": "dv",
                     "shinobi_camera_id": "oobpoF9tGD",
                     "mapped_id": "6",
                 },
