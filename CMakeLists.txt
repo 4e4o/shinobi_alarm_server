@@ -13,7 +13,7 @@ add_executable(${PROJECT_NAME})
 
 file(GLOB_RECURSE PRJ_SRCS src/*.c src/*.cpp src/*.h src/*.hpp)
 target_sources(${PROJECT_NAME} PRIVATE ${PRJ_SRCS})
-target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC src/)
+target_include_directories(${PROJECT_NAME} PUBLIC src/)
 target_link_libraries(${PROJECT_NAME} boost_base Boost::filesystem)
 
 install (TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
