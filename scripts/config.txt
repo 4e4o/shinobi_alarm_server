@@ -6,14 +6,14 @@
                 {
                     "name": "korhik",
                     "shinobi_camera_id": "NIurionfqY",
-                    "mapped_id": "66",
+                    "mapped_id": 66
                 },
                 {
                     "name": "dv",
                     "shinobi_camera_id": "oobpoF9tGD",
-                    "mapped_id": "6",
-                },
+                    "mapped_id": 6
+                }
             ]
-        },
+        }
     ]
 }
