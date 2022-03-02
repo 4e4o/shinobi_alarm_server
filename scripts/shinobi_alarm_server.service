@@ -1,13 +1,13 @@
 [Unit]
 Description=shinobi alarm server service
 After=network.target
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
-User=root
-Group=root
 ExecStart=/usr/bin/bash -c '/usr/local/bin/shinobi_alarm_server --c /usr/local/etc/shinobi_alarm_server/config.txt'
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
