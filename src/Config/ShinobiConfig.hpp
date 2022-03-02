@@ -12,6 +12,8 @@ public:
 
     ShinobiConfig(const boost::json::object&);
 
+    void init(const boost::json::object&) override final;
+
     const std::string& getId() const;
     const TCameras& getCameras() const;
 

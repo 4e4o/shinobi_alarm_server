@@ -4,13 +4,15 @@
 #include <boost/json.hpp>
 
 ShinobiConfig::ShinobiConfig(const boost::json::object &o) :
-    m_id(toStdString(o.at("shinobi_account_id").as_string())) {
+    m_id(get<std::string>(o, "shinobi_account_id")) {
+    registerType<ConfigItem, CameraConfig, const boost::json::object&>();
+}
 
+void ShinobiConfig::init(const boost::json::object& o) {
     if (!o.contains("cameras"))
         return;
 
     const auto& cams = o.at("cameras");
-    registerType<ConfigItem, CameraConfig, const boost::json::object&>();
     ArrayParser::TItems camsItems;
     parseArray(cams.as_array(), camsItems);
     for (auto& c : camsItems) {

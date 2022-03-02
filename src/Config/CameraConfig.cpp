@@ -3,9 +3,9 @@
 #include <boost/json.hpp>
 
 CameraConfig::CameraConfig(const boost::json::object &o) :
-    m_name(toStdString(o.at("name").as_string())),
-    m_camId(toStdString(o.at("shinobi_camera_id").as_string())),
-    m_mappedId(o.at("mapped_id").as_int64()) {
+    m_name(get<std::string>(o, "name")),
+    m_camId(get<std::string>(o, "shinobi_camera_id")),
+    m_mappedId(get<std::int64_t>(o, "mapped_id")) {
 }
 
 const std::string& CameraConfig::name() const {
