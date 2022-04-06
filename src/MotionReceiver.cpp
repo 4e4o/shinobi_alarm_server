@@ -13,7 +13,6 @@ using namespace std::literals::chrono_literals;
 #define IPC_QUEUE_NAME  "shinobi_alarm_queue"
 
 using namespace boost::asio;
-using namespace boost::interprocess;
 
 MotionReceiver::MotionReceiver(io_context &io,
                                const ShinobiConfig* config)
