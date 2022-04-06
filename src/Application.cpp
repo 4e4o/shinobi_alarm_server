@@ -4,10 +4,8 @@
 
 #include <Config/Config.hpp>
 
-#define PROG_NAME   "shinobi_alarm_server"
-
 Application::Application(int argc, char* argv[])
-    : BaseConfigApplication(PROG_NAME, argc, argv) {
+    : BaseConfigApplication(argc, argv) {
     config()->registerType<ConfigItem, ShinobiConfig, const boost::json::object&>();
 }
 

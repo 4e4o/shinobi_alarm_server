@@ -8,16 +8,21 @@ ShinobiConfig::ShinobiConfig(const boost::json::object &o) :
     registerType<ConfigItem, CameraConfig, const boost::json::object&>();
 }
 
-void ShinobiConfig::init(const boost::json::object& o) {
+bool ShinobiConfig::init(const boost::json::object& o) {
     if (!o.contains("cameras"))
-        return;
+        return false;
 
     const auto& cams = o.at("cameras");
     ArrayParser::TItems camsItems;
-    parseArray(cams.as_array(), camsItems);
+
+    if (!parseArray(cams.as_array(), camsItems))
+        return false;
+
     for (auto& c : camsItems) {
         m_cameras.emplace_back(static_cast<CameraConfig*>(c.release()));
     }
+
+    return true;
 }
 
 const std::string& ShinobiConfig::getId() const {
