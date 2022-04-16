@@ -3,8 +3,9 @@
 #include "Config/ShinobiConfig.hpp"
 #include "Config/CameraConfig.hpp"
 
-#include <Misc/Debug.hpp>
+#include <AApplication.h>
 #include <IPC/IntQueue.h>
+#include <Misc/Debug.hpp>
 
 using namespace std::literals::chrono_literals;
 
